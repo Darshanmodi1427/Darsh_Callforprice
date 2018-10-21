@@ -1,0 +1,27 @@
+<!--@subject {{trans "New Call For Price Request Received"}} @-->
+{{template config_path="design/email/header_template"}}
+
+<p>{{trans "Call For Price Request Details:"}}</p>
+<table class="message-details">
+    <tr>
+        <td><b>{{trans "Customer Name :"}}</b></td>
+        <td>{{var data.customer_name}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "Customer Email :"}}</b></td>
+        <td>{{var data.customer_email}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "Customer Telephone :"}}</b></td>
+        <td>{{var data.customer_telephone}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "Request Detail :"}}</b></td>
+        <td>{{var data.request_detail}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "Product Name :"}}</b></td>
+        <td>{{var data.product_name}}</td>
+    </tr>
+</table>
+{{template config_path="design/email/footer_template"}}

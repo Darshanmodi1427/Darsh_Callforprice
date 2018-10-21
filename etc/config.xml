@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <catalog>
+            <call_for_price>
+                <call_for_price_button_text>Call For Price</call_for_price_button_text>                
+            </call_for_price>
+        </catalog>
+    </default>
+</config>

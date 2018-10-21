@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <head>
+        <title>Backend Page Title</title>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Darsh\Callforprice\Block\Adminhtml\Index\Index" name="callforprice_block_adminhtml_index_index"  template="Darsh_Callforprice::callforprice_index_index.phtml" />
+        </referenceContainer>
+    </body>
+</page>

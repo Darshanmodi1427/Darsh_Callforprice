@@ -1,0 +1,278 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/* @var $block \Magento\Catalog\Block\Product\Compare\ListCompare */
+?>
+<?php $_total = $block->getItems()->getSize();
+$callPriceHelper = $this->helper('Darsh\Callforprice\Helper\Data');
+$customerData = $callPriceHelper->getCurrentCustomerData();
+ ?>
+<?php if ($_total): ?>
+    <a href="#" class="action print" title="<?= /* @escapeNotVerified */ __('Print This Page') ?>">
+        <span><?= /* @escapeNotVerified */ __('Print This Page') ?></span>
+    </a>
+        <div class="table-wrapper comparison">
+            <table class="data table table-comparison" id="product-comparison"
+                data-mage-init='{"compareList":{
+                    "windowPrintSelector":".action.print",
+                    "productsInRow":"5",
+                    "selectors":{
+                        "productAddToCartSelector":"button.action.tocart"}
+                }}'>
+                <caption class="table-caption"><?= /* @escapeNotVerified */ __('Compare Products') ?></caption>
+                <thead>
+                <tr>
+                    <?php $_i = 0 ?>
+                    <?php foreach ($block->getItems() as $_item): ?>
+                        <?php if ($_i++ == 0): ?>
+                            <th scope="row" class="cell label remove"><span><?= /* @escapeNotVerified */ __('Remove Product') ?></span></th>
+                        <?php endif; ?>
+                        <td class="cell remove product">
+                            <?php $compareHelper = $this->helper('Magento\Catalog\Helper\Product\Compare');?>
+                            <a href="#" data-post='<?= /* @escapeNotVerified */ $compareHelper->getPostDataRemove($_item) ?>'
+                               class="action delete" title="<?= /* @escapeNotVerified */ __('Remove Product') ?>">
+                                <span><?= /* @escapeNotVerified */ __('Remove Product') ?></span>
+                            </a>
+                        </td>
+                    <?php endforeach; ?>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <?php $_i = 0; ?>
+                    <?php $_helper = $this->helper('Magento\Catalog\Helper\Output'); ?>
+                    <?php /** @var $_item \Magento\Catalog\Model\Product */ ?>
+                    <?php foreach ($block->getItems() as $_item): ?>
+                        <?php if ($_i++ == 0): ?>
+                            <th scope="row" class="cell label product"><span><?= /* @escapeNotVerified */ __('Product') ?></span></th>
+                        <?php endif; ?>
+                        <td data-th="<?= $block->escapeHtml(__('Product')) ?>" class="cell product info">
+                            <a class="product-item-photo" href="<?= /* @escapeNotVerified */ $block->getProductUrl($_item) ?>" title="<?= /* @escapeNotVerified */ $block->stripTags($_item->getName(), null, true) ?>">
+                                <?= $block->getImage($_item, 'product_comparison_list')->toHtml() ?>
+                            </a>
+                            <strong class="product-item-name">
+                                <a href="<?= /* @escapeNotVerified */ $block->getProductUrl($_item) ?>" title="<?= /* @escapeNotVerified */ $block->stripTags($_item->getName(), null, true) ?>">
+                                    <?= /* @escapeNotVerified */ $_helper->productAttribute($_item, $_item->getName(), 'name') ?>
+                                </a>
+                            </strong>
+                            <?= $block->getReviewsSummaryHtml($_item, 'short') ?>
+                             <?php $callforPrice = $callPriceHelper->showCallForPriceButton($_item);
+                             ?>
+                            <?php if($callforPrice==0){ ?> 
+                            <?= /* @escapeNotVerified */ $block->getProductPrice($_item, '-compare-list-top') ?>
+                            <?php } ?>
+                            <div class="product-item-actions">
+                                <div class="actions-primary">
+                                    <?php if ($callforPrice == 0): ?>
+                                        <!--call for price conditions-->
+                                    <?php if ($_item->isSaleable()): ?>
+                                        <form data-role="tocart-form" action="<?= /* @escapeNotVerified */ $this->helper('Magento\Catalog\Helper\Product\Compare')->getAddToCartUrl($_item) ?>" method="post">
+                                            <?= $block->getBlockHtml('formkey') ?>
+                                            <button type="submit" class="action tocart primary">
+                                                <span><?= /* @escapeNotVerified */ __('Add to Cart') ?></span>
+                                            </button>
+                                        </form>
+                                    <?php else: ?>
+                                        <?php if ($_item->getIsSalable()): ?>
+                                            <div class="stock available"><span><?= /* @escapeNotVerified */ __('In stock') ?></span></div>
+                                        <?php else: ?>
+                                            <div class="stock unavailable"><span><?= /* @escapeNotVerified */ __('Out of stock') ?></span></div>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    <?php else: ?>
+                                    <?php
+                                    $buttonTitle = $callPriceHelper->getButtonTitle();
+                                    $id = $_item->getId();
+                                    ?>
+                                        <button type="submit"
+                                                title="<?php echo $buttonTitle ?>"
+                                                class="action tocart primary modalRun" id="<?php echo "modalRun".$id ?>">
+                                            <span><?php echo $buttonTitle; ?></span>
+                                        </button>
+                                        <div id="popup-modal">
+
+                                        </div>
+                                        <!-- popup code -->
+                                    <?php
+                                    $submitformurl = $callPriceHelper->submitformurl();
+                                    ?>
+                                        <div id="modal-content" class="<?php echo "modal-content".$id ?>">
+                                            <div id="<?php echo "response-message".$id ?>"></div>
+                                            <div class="modal-body">
+                                                <form name="<?php echo "cp_form".$id ?>" id="<?php echo "cp_form".$id ?>" method="post" enctype="multipart/form-data" autocomplete="off" data-mage-init='{"validation":{}}' data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>" >
+                                                    <fieldset class="fieldset">
+                                                        <div class="field name required">
+                                                            <label class="label" for="customer_name"><span><?php echo __("Name"); ?></span></label>
+                                                            <div class="control">
+                                                                <input name="customer_name" id="<?php echo "customer_name" . $id ?>" title="Name" value="<?php
+                                                                if ($customerData) {
+                                                                    echo $customerData->getName();
+                                                                }
+
+                                                                ?>" class="input-text" type="text" data-validate="{required:true}" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="field email required">
+                                                            <label class="label" for="customer_email"><span><?php echo __("Email"); ?></span></label>
+                                                            <div class="control">
+                                                                <input name="customer_email" id="<?php echo "customer_email" . $id ?>" title="Email" value="<?php
+                                                                if ($customerData) {
+                                                                    echo $customerData->getEmail();
+                                                                }
+
+                                                                ?>" class="input-text" type="text" data-validate="{required:true, 'validate-email':true}" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="field telephone required">
+                                                            <label class="label" for="customer_telephone"><span><?php echo __("Telephone"); ?></span></label>
+                                                            <div class="control">
+                                                                <input name="customer_telephone" id="<?php echo "customer_telephone".$id ?>" title="Telephone" value="" type="text" class="input-text" data-validate="{required:true}" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="field request_detail required">
+                                                            <label class="label" for="request_detail"><span><?php echo __("Request Details"); ?></span></label>
+                                                            <div class="control">
+                                                                <textarea rows="3" cols="5" class="input-text" title="details" id="<?php echo "request_detail".$id ?>" name="request_detail" data-validate="{required:true}"><?php echo "Product Name = ".$_item->getName(); ?></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                    <input type="hidden" name="status" id="<?php echo "status".$id ?>" value="1"/>
+                                                    <input type="hidden" name="product_name" id="<?php echo "product_name".$id ?>" value="<?php echo $_item->getName(); ?>"/>
+                                                    <input type="hidden" name="product_id" id="<?php echo "product_id".$id ?>" value="<?php echo $_item->getEntityId(); ?>"/>
+                                                    <input type="hidden" name="customer_id" id="<?php echo "customer_id".$id ?>" value="<?php echo $_item->getEntityId(); ?>"/>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <script>
+                                            require(
+                                                [
+                                                    'jquery',
+                                                    'Magento_Ui/js/modal/modal'
+                                                ],
+                                                function($,modal) {
+                                                    $('#modal-content').modal({
+                                                        type: 'popup',
+                                                        responsive: true,
+                                                        innerScroll: true,
+                                                        title: "Submit Form For Price",
+                                                        buttons: [{
+                                                            text: $.mage.__('Submit'),
+                                                            class: 'action  primary',
+                                                            click: function (data) {
+                                                                var dataForm = $('#cp_form' +<?php echo $id; ?>);
+                                                                if (dataForm.validation('isValid')) {
+                                                                    var customer_name = $("#customer_name" +<?php echo $id; ?>).val();
+                                                                    var customer_email = $("#customer_email" +<?php echo $id; ?>).val();
+                                                                    var customer_telephone = $("#customer_telephone" +<?php echo $id; ?>).val();
+                                                                    var request_detail = $("#request_detail" +<?php echo $id; ?>).val();
+                                                                    var product_id = $("#product_id" +<?php echo $id; ?>).val();
+                                                                    var customer_id = $("#customer_id" +<?php echo $id; ?>).val();
+                                                                    var status = $("#status" +<?php echo $id; ?>).val();
+                                                                    var product_name = $("#product_name" +<?php echo $id; ?>).val();
+                                                                    if(customer_name && customer_email && customer_telephone && request_detail && product_id && customer_id && status && product_name){
+                                                                        $.ajax({
+                                                                            url: "<?php echo $submitformurl; ?>",
+                                                                            dataType: 'json',
+                                                                            type: 'POST',
+                                                                            showLoader: true,
+                                                                            data: {customer_name: customer_name, customer_email: customer_email, customer_telephone: customer_telephone, request_detail: request_detail, product_id: product_id, customer_id: customer_id, status: status, product_name: product_name},
+                                                                            success: function (data) {
+                                                                                if (data.status == "success") {
+                                                                                    $("#cp_form" +<?php echo $id; ?>).trigger("reset");
+                                                                                    $("#response-message" +<?php echo $id; ?>).addClass("success");
+                                                                                    $("#response-message" +<?php echo $id; ?>).html(data.message);
+                                                                                } else {
+                                                                                    $("#response-message" +<?php echo $id; ?>).addClass("error");
+                                                                                    $("#response-message" +<?php echo $id; ?>).html(data.message);
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                }
+                                                            }
+                                                        }]
+                                                    });
+                                                    $("#modalRun" +<?php echo $id; ?>).on("click",function(){
+                                                        $("#cp_form" +<?php echo $id; ?>).trigger("reset");
+                                                        $("#response-message" +<?php echo $id; ?>).html("");
+                                                        $("#response-message" +<?php echo $id; ?>).removeClass("success");
+                                                        $("#response-message" +<?php echo $id; ?>).removeClass("error");
+                                                        $('.modal-content' +<?php echo $id; ?>).modal('openModal');
+
+                                                    });
+                                                    $('.modal-popup').wrap('<div class="call-for-price"></div>')
+                                                });
+
+                                        </script>
+                                        <!-- popup code end-->
+                                    <?php endif; ?>
+
+                                    <!--call for price condition-->  
+                                </div>
+                                <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()) : ?>
+                                    <div class="secondary-addto-links actions-secondary" data-role="add-to-links">
+                                        <a href="#" data-post='<?= /* @escapeNotVerified */ $block->getAddToWishlistParams($_item) ?>' class="action towishlist" data-action="add-to-wishlist">
+                                            <span><?= /* @escapeNotVerified */ __('Add to Wish List') ?></span>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                    <?php endforeach; ?>
+                </tr>
+                </tbody>
+                <tbody>
+                <?php foreach ($block->getAttributes() as $_attribute): ?>
+                    <tr>
+                        <?php $_i = 0 ?>
+                        <?php foreach ($block->getItems() as $_item): ?>
+                            <?php if ($_i++ == 0): ?>
+                                <th scope="row" class="cell label">
+                                    <span class="attribute label">
+                                        <?= $block->escapeHtml($_attribute->getStoreLabel() ? $_attribute->getStoreLabel() : __($_attribute->getFrontendLabel())) ?>
+                                    </span>
+                                </th>
+                            <?php endif; ?>
+                            <td class="cell product attribute">
+                                <div class="attribute value">
+                                    <?php switch ($_attribute->getAttributeCode()) {
+                                        case "price": ?>
+                                            <?php
+                                                /* @escapeNotVerified */ echo $block->getProductPrice(
+                                                    $_item,
+                                                    '-compare-list-' . $_attribute->getCode()
+                                                )
+                                            ?>
+                                            <?php break;
+                                        case "small_image": ?>
+                                            <?php $block->getImage($_item, 'product_small_image')->toHtml(); ?>
+                                            <?php break;
+                                        default: ?>
+                                        <?= /* @escapeNotVerified */ $_helper->productAttribute($_item, $block->getProductAttributeValue($_item, $_attribute), $_attribute->getAttributeCode()) ?>
+                                        <?php break;
+                                    } ?>
+                                </div>
+                            </td>
+                        <?php endforeach; ?>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php if (!$block->isRedirectToCartEnabled()) : ?>
+            <script type="text/x-magento-init">
+            {
+                "[data-role=tocart-form]": {
+                    "catalogAddToCart": {}
+                }
+            }
+            </script>
+        <?php endif; ?>
+<?php else: ?>
+    <div class="message info empty"><div><?= /* @escapeNotVerified */ __('You have no items to compare.') ?></div></div>
+<?php endif; ?>

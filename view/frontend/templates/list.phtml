@@ -1,0 +1,286 @@
+<?php
+use Magento\Framework\App\Action\Action;
+?>
+<?php
+/**
+ *CallforPrice Product list template
+ *
+ * @var $block \Magento\Catalog\Block\Product\ListProduct
+ */
+?>
+<?php
+$_productCollection = $block->getLoadedProductCollection();
+$_helper = $this->helper('Magento\Catalog\Helper\Output');
+$category = $this->getLayer()->getCurrentCategory();
+$callPriceHelper = $this->helper('Darsh\Callforprice\Helper\Data');
+$customerData = $callPriceHelper->getCurrentCustomerData();
+
+?>
+<?php if (!$_productCollection->count()): ?>
+    <div class="message info empty"><div><?php /* @escapeNotVerified */ echo __('We can\'t find products matching the selection.') ?></div></div>
+<?php else: ?>
+    <?php echo $block->getToolbarHtml() ?>
+    <?php echo $block->getAdditionalHtml() ?>
+    <?php
+    if ($block->getMode() == 'grid') {
+        $viewMode = 'grid';
+        $image = 'category_page_grid';
+        $showDescription = false;
+        $templateType = \Magento\Catalog\Block\Product\ReviewRendererInterface::SHORT_VIEW;
+    } else {
+        $viewMode = 'list';
+        $image = 'category_page_list';
+        $showDescription = true;
+        $templateType = \Magento\Catalog\Block\Product\ReviewRendererInterface::FULL_VIEW;
+    }
+    /**
+     * Position for actions regarding image size changing in vde if needed
+     */
+    $pos = $block->getPositioned();
+
+    ?>
+    <div class="products wrapper <?php /* @escapeNotVerified */ echo $viewMode; ?> products-<?php /* @escapeNotVerified */ echo $viewMode; ?>">
+        <?php $iterator = 1; ?>
+        <ol class="products list items product-items">
+            <?php /** @var $_product \Magento\Catalog\Model\Product */ ?>
+            <?php foreach ($_productCollection as $_product): ?>
+                <?php /* @escapeNotVerified */ echo($iterator++ == 1) ? '<li class="item product product-item">' : '</li><li class="item product product-item">' ?>
+                <div class="product-item-info" data-container="product-grid">
+                    <?php
+                    $productImage = $block->getImage($_product, $image);
+                    if ($pos != null) {
+                        $position = ' style="left:' . $productImage->getWidth() . 'px;'
+                            . 'top:' . $productImage->getHeight() . 'px;"';
+                    }
+                    ?>
+                    <?php // Product Image ?>
+                    <a href="<?php /* @escapeNotVerified */ echo $_product->getProductUrl() ?>" class="product photo product-item-photo" tabindex="-1">
+                        <?php echo $productImage->toHtml(); ?>
+                    </a>
+                    <div class="product details product-item-details">
+                        <?php
+                        $_productNameStripped = $block->stripTags($_product->getName(), null, true);
+                        ?>
+                        <strong class="product name product-item-name">
+                            <a class="product-item-link"
+                               href="<?php /* @escapeNotVerified */ echo $_product->getProductUrl() ?>">
+                                <?php /* @escapeNotVerified */ echo $_helper->productAttribute($_product, $_product->getName(), 'name'); ?>
+                            </a>
+                        </strong>
+                        <?php echo $block->getReviewsSummaryHtml($_product, $templateType); ?>
+
+                        <?php $callforPrice = $callPriceHelper->showCallForPriceButton($_product); ?>
+
+                        <?php if ($callforPrice == 0) { ?>
+                            <?php /* @escapeNotVerified */ echo $block->getProductPrice($_product) ?>
+                        <?php } ?>
+
+                        <?php echo $block->getProductDetailsHtml($_product); ?>
+
+                        <div class="product-item-inner">
+                            <div class="product actions product-item-actions"<?php echo strpos($pos, $viewMode . '-actions') ? $position : ''; ?>>
+
+                                <div class="actions-primary"<?php echo strpos($pos, $viewMode . '-primary') ? $position : ''; ?>>
+                                    <?php if ($callforPrice == 0): ?>
+                                        <!--call for price conditions-->
+                                        <?php if ($_product->isSaleable()): ?>
+                                        <?php $postParams = $block->getAddToCartPostParams($_product); ?>
+                                        <form data-role="tocart-form" action="<?php /* @escapeNotVerified */ echo $postParams['action']; ?>" method="post">
+                                            <input type="hidden" name="product" value="<?php /* @escapeNotVerified */ echo $postParams['data']['product']; ?>">
+                                            <input type="hidden" name="<?php /* @escapeNotVerified */ echo Action::PARAM_NAME_URL_ENCODED; ?>" value="<?php /* @escapeNotVerified */ echo $postParams['data'][Action::PARAM_NAME_URL_ENCODED]; ?>">
+                                            <?php echo $block->getBlockHtml('formkey')?>
+                                            <button type="submit"
+                                                    title="<?php echo $block->escapeHtml(__('Add to Cart')); ?>"
+                                                    class="action tocart primary">
+                                                <span><?php /* @escapeNotVerified */ echo __('Add to Cart') ?></span>
+                                            </button>
+                                        </form>
+                                    <?php else: ?>
+                                        <?php if ($_product->getIsSalable()): ?>
+                                        <div class="stock available"><span><?php /* @escapeNotVerified */ echo __('In stock') ?></span></div>
+                                    <?php else: ?>
+                                        <div class="stock unavailable"><span><?php /* @escapeNotVerified */ echo __('Out of stock') ?></span></div>
+                                    <?php endif; ?>
+                                    <?php endif; ?>
+                                    <?php else: ?>
+                                    <?php
+                                    $buttonTitle = $callPriceHelper->getButtonTitle();
+                                    $id = $_product->getId();
+                                    ?>
+                                        <button type="submit"
+                                                title="<?php echo $buttonTitle ?>"
+                                                class="action tocart primary modalRun" id="<?php echo "modalRun".$id ?>">
+                                            <span><?php echo $buttonTitle; ?></span>
+                                        </button>
+                                        <div id="popup-modal">
+
+                                        </div>
+                                        <!-- popup code -->
+                                    <?php
+                                    $submitformurl = $callPriceHelper->submitformurl();
+                                    ?>
+                                        <div id="modal-content" class="<?php echo "modal-content".$id ?>">
+                                            <div id="<?php echo "response-message".$id ?>"></div>
+                                            <div class="modal-body">
+                                                <form name="<?php echo "cp_form".$id ?>" id="<?php echo "cp_form".$id ?>" method="post" enctype="multipart/form-data" autocomplete="off" data-mage-init='{"validation":{}}' data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>" >
+                                                    <fieldset class="fieldset">
+                                                        <div class="field name required">
+                                                            <label class="label" for="customer_name"><span><?php echo __("Name"); ?></span></label>
+                                                            <div class="control">
+                                                                <input name="customer_name" id="<?php echo "customer_name" . $id ?>" title="Name" value="<?php
+                                                                if ($customerData) {
+                                                                    echo $customerData->getName();
+                                                                }
+
+                                                                ?>" class="input-text" type="text" data-validate="{required:true}" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="field email required">
+                                                            <label class="label" for="customer_email"><span><?php echo __("Email"); ?></span></label>
+                                                            <div class="control">
+                                                                <input name="customer_email" id="<?php echo "customer_email" . $id ?>" title="Email" value="<?php
+                                                                if ($customerData) {
+                                                                    echo $customerData->getEmail();
+                                                                }
+
+                                                                ?>" class="input-text" type="text" data-validate="{required:true, 'validate-email':true}" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="field telephone required">
+                                                            <label class="label" for="customer_telephone"><span><?php echo __("Telephone"); ?></span></label>
+                                                            <div class="control">
+                                                                <input name="customer_telephone" id="<?php echo "customer_telephone".$id ?>" title="Telephone" value="" type="text" class="input-text" data-validate="{required:true}" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="field request_detail required">
+                                                            <label class="label" for="request_detail"><span><?php echo __("Request Details"); ?></span></label>
+                                                            <div class="control">
+                                                                <textarea rows="3" cols="5" class="input-text" title="details" id="<?php echo "request_detail".$id ?>" name="request_detail" data-validate="{required:true}"><?php echo "Product Name = ".$_product->getName(); ?></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                    <input type="hidden" name="status" id="<?php echo "status".$id ?>" value="1"/>
+                                                    <input type="hidden" name="product_name" id="<?php echo "product_name".$id ?>" value="<?php echo $_product->getName(); ?>"/>
+                                                    <input type="hidden" name="product_id" id="<?php echo "product_id".$id ?>" value="<?php echo $_product->getEntityId(); ?>"/>
+                                                    <input type="hidden" name="customer_id" id="<?php echo "customer_id".$id ?>" value="<?php echo $_product->getEntityId(); ?>"/>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <script>
+                                            require(
+                                                [
+                                                    'jquery',
+                                                    'Magento_Ui/js/modal/modal'
+                                                ],
+                                                function($,modal) {
+                                                    $('#modal-content').modal({
+                                                        type: 'popup',
+                                                        responsive: true,
+                                                        innerScroll: true,
+                                                        title: "Submit Form For Price",
+                                                        buttons: [{
+                                                            text: $.mage.__('Submit'),
+                                                            class: 'action  primary',
+                                                            click: function (data) {
+                                                                var dataForm = $('#cp_form' +<?php echo $id; ?>);
+                                                                if (dataForm.validation('isValid')) {
+                                                                    var customer_name = $("#customer_name" +<?php echo $id; ?>).val();
+                                                                    var customer_email = $("#customer_email" +<?php echo $id; ?>).val();
+                                                                    var customer_telephone = $("#customer_telephone" +<?php echo $id; ?>).val();
+                                                                    var request_detail = $("#request_detail" +<?php echo $id; ?>).val();
+                                                                    var product_id = $("#product_id" +<?php echo $id; ?>).val();
+                                                                    var customer_id = $("#customer_id" +<?php echo $id; ?>).val();
+                                                                    var status = $("#status" +<?php echo $id; ?>).val();
+                                                                    var product_name = $("#product_name" +<?php echo $id; ?>).val();
+                                                                    if(customer_name && customer_email && customer_telephone && request_detail && product_id && customer_id && status && product_name){
+                                                                        $.ajax({
+                                                                            url: "<?php echo $submitformurl; ?>",
+                                                                            dataType: 'json',
+                                                                            type: 'POST',
+                                                                            showLoader: true,
+                                                                            data: {customer_name: customer_name, customer_email: customer_email, customer_telephone: customer_telephone, request_detail: request_detail, product_id: product_id, customer_id: customer_id, status: status, product_name: product_name},
+                                                                            success: function (data) {
+                                                                                if (data.status == "success") {
+                                                                                    $("#cp_form" +<?php echo $id; ?>).trigger("reset");
+                                                                                    $("#response-message" +<?php echo $id; ?>).addClass("success");
+                                                                                    $("#response-message" +<?php echo $id; ?>).html(data.message);
+                                                                                } else {
+                                                                                    $("#response-message" +<?php echo $id; ?>).addClass("error");
+                                                                                    $("#response-message" +<?php echo $id; ?>).html(data.message);
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                }
+                                                            }
+                                                        }]
+                                                    });
+                                                    $("#modalRun" +<?php echo $id; ?>).on("click",function(){
+                                                        $("#cp_form" +<?php echo $id; ?>).trigger("reset");
+                                                        $("#response-message" +<?php echo $id; ?>).html("");
+                                                        $("#response-message" +<?php echo $id; ?>).removeClass("success");
+                                                        $("#response-message" +<?php echo $id; ?>).removeClass("error");
+                                                        $('.modal-content' +<?php echo $id; ?>).modal('openModal');
+
+                                                    });
+                                                    $('.modal-popup').wrap('<div class="call-for-price"></div>')
+                                                });
+
+                                        </script>
+                                        <!-- popup code end-->
+                                    <?php endif; ?>
+
+                                    <!--call for price condition-->
+                                </div>
+
+
+                                <div data-role="add-to-links" class="actions-secondary"<?php echo strpos($pos, $viewMode . '-secondary') ? $position : ''; ?>>
+                                    <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
+                                        <a href="#"
+                                           class="action towishlist"
+                                           title="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
+                                           aria-label="<?php echo $block->escapeHtml(__('Add to Wish List')); ?>"
+                                           data-post='<?php /* @escapeNotVerified */ echo $block->getAddToWishlistParams($_product); ?>'
+                                           data-action="add-to-wishlist"
+                                           role="button">
+                                            <span><?php /* @escapeNotVerified */ echo __('Add to Wish List') ?></span>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php
+                                    $compareHelper = $this->helper('Magento\Catalog\Helper\Product\Compare');
+                                    ?>
+                                    <a href="#"
+                                       class="action tocompare"
+                                       title="<?php echo $block->escapeHtml(__('Add to Compare')); ?>"
+                                       aria-label="<?php echo $block->escapeHtml(__('Add to Compare')); ?>"
+                                       data-post='<?php /* @escapeNotVerified */ echo $compareHelper->getPostDataParams($_product); ?>'
+                                       role="button">
+                                        <span><?php /* @escapeNotVerified */ echo __('Add to Compare') ?></span>
+                                    </a>
+                                </div>
+                            </div>
+                            <?php if ($showDescription):?>
+                                <div class="product description product-item-description">
+                                    <?php /* @escapeNotVerified */ echo $_helper->productAttribute($_product, $_product->getShortDescription(), 'short_description') ?>
+                                    <a href="<?php /* @escapeNotVerified */ echo $_product->getProductUrl() ?>" title="<?php /* @escapeNotVerified */ echo $_productNameStripped ?>"
+                                       class="action more"><?php /* @escapeNotVerified */ echo __('Learn More') ?></a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <?php echo($iterator == count($_productCollection)+1) ? '</li>' : '' ?>
+            <?php endforeach; ?>
+        </ol>
+    </div>
+    <?php echo $block->getToolbarHtml() ?>
+    <?php if (!$block->isRedirectToCartEnabled()) : ?>
+        <script type="text/x-magento-init">
+        {
+            "[data-role=tocart-form], .form.map.checkout": {
+            "catalogAddToCart": {}
+        }
+    }
+</script>
+    <?php endif; ?>
+<?php endif; ?>

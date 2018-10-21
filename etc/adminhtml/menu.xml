@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Darsh_Callforprice::Base" title="Call For Price" module="Darsh_Callforprice" resource="Darsh_Callforprice::callprice" sortOrder="20"/>
+        <add id="Darsh_Callforprice::request" title="Manage Request" module="Darsh_Callforprice" resource="Darsh_Callforprice::callprice" parent="Darsh_Callforprice::Base" sortOrder="1" action="callforprice/callforprice/index" />
+    </menu>
+</config>

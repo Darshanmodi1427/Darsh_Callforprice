@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="catalog_call_for_price_email_template_customer" label="Customer Call For Price" file="call_for_price_customer.html" type="html" module="Darsh_Callforprice" area="frontend"/>
+    <template id="catalog_call_for_price_email_template_admin" label="Admin Call For Price" file="call_for_price_admin.html" type="html" module="Darsh_Callforprice" area="frontend"/>
+    <template id="catalog_call_for_price_email_template_status" label="Call For Price Status" file="call_for_price_status.html" type="html" module="Darsh_Callforprice" area="frontend"/>
+</config>
