@@ -2,5 +2,4 @@
 \Magento\Framework\Component\ComponentRegistrar::register(
     \Magento\Framework\Component\ComponentRegistrar::MODULE,
     'Darsh_Callforprice',
-    __DIR__
-);
+    __DIR__);

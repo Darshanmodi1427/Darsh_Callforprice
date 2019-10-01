@@ -3,7 +3,7 @@
 	<body>
 		<referenceBlock name="bundle.summary">
 			<referenceBlock name="product.info.addtocart.bundle">
-				<action method="setTemplate">
+				<action method="setTemplate" ifconfig="callforprice/call_for_price/enable">
 					<argument name="template" xsi:type="string">Darsh_Callforprice::addtocart.phtml</argument>
 				</action>
 			</referenceBlock>

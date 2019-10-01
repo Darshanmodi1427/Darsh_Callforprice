@@ -1,13 +1,3 @@
-<?php
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
-
-// @codingStandardsIgnoreFile
-
-/* @var $block \Magento\Catalog\Block\Product\Compare\ListCompare */
-?>
 <?php $_total = $block->getItems()->getSize();
 $callPriceHelper = $this->helper('Darsh\Callforprice\Helper\Data');
 $customerData = $callPriceHelper->getCurrentCustomerData();

@@ -2,33 +2,14 @@
 
 namespace Darsh\Callforprice\Block\Adminhtml\Callforprice\Edit\Tab;
 
-
-/**
- * Class Main
- * @package Darsh\Callforprice\Block\Adminhtml\Callforprice\Edit\Tab
- */
 class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
 
-    /**
-     * @var \Magento\Store\Model\System\Store
-     */
+   
     protected $_systemStore;
-
-    /**
-     * @var \Darsh\Callforprice\Model\Status
-     */
     protected $_status;
 
-    /**
-     * Main constructor.
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Data\FormFactory $formFactory
-     * @param \Magento\Store\Model\System\Store $systemStore
-     * @param \Darsh\Callforprice\Model\Status $status
-     * @param array $data
-     */
+
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Registry $registry,
@@ -43,24 +24,12 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magent
         parent::__construct($context, $registry, $formFactory, $data);
     }
 
-    /**
-     * Prepare form
-     *
-     * @return $this
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
-     */
     protected function _prepareForm()
     {
-        /* @var $model \Darsh\Callforprice\Model\BlogPosts */
         $model = $this->_coreRegistry->registry('callforprice');
-
         $isElementDisabled = false;
-
-        /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create();
-
         $form->setHtmlIdPrefix('page_');
-
         $fieldset = $form->addFieldset('base_fieldset', ['legend' => __('Item Information')]);
 
         if ($model->getId()) {
@@ -151,56 +120,31 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magent
         return parent::_prepareForm();
     }
 
-    /**
-     * Prepare label for tab
-     *
-     * @return \Magento\Framework\Phrase
-     */
     public function getTabLabel()
     {
         return __('Item Information');
     }
 
-    /**
-     * Prepare title for tab
-     *
-     * @return \Magento\Framework\Phrase
-     */
     public function getTabTitle()
     {
         return __('Item Information');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function canShowTab()
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isHidden()
     {
         return false;
     }
 
-    /**
-     * Check permission for passed action
-     *
-     * @param string $resourceId
-     * @return bool
-     */
     protected function _isAllowedAction($resourceId)
     {
         return $this->_authorization->isAllowed($resourceId);
     }
 
-    /**
-     * @return array
-     */
     public function getTargetOptionArray()
     {
         return array(

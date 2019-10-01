@@ -113,7 +113,7 @@ class Save extends \Magento\Backend\App\Action
         $postObject->setData($dataCustomer);
         $transport = $this->_transportBuilder
             ->setTemplateVars(['data' => $postObject])
-            ->setTemplateIdentifier('catalog_call_for_price_email_template_status')
+            ->setTemplateIdentifier('callforprice_call_for_price_email_template_status')
             ->setTemplateOptions(
                 [
                     'area' => \Magento\Framework\App\Area::AREA_FRONTEND,

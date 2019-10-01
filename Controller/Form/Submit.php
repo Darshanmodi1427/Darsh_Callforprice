@@ -11,37 +11,14 @@ use Magento\Store\Model\ScopeInterface;
 class Submit extends \Magento\Framework\App\Action\Action
 {
 
-    /**
-     *email sender constant
-     */
     const XML_PATH_EMAIL_SENDER = 'trans_email/ident_general/email';
-    /**
-     *send email to constant
-     */
-    const XML_PATH_EMAIL_SEND_TO = 'catalog/call_for_price/send_email_to';
-
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
+    const XML_PATH_EMAIL_SEND_TO = 'callforprice/call_for_price/send_email_to';
     protected $_storeManager;
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
     protected $scopeConfig;
-    /**
-     * @var \Magento\Framework\Mail\Template\TransportBuilder
-     */
     protected $_transportBuilder;
-    /**
-     * @var \Magento\Framework\Translate\Inline\StateInterface
-     */
     protected $inlineTranslation;
 
-    /**
-     * Result constructor.
-     * @param Context $context
-     * @param PageFactory $pageFactory
-     */
+  
     public function __construct(\Magento\Backend\App\Action\Context $context, \Magento\Store\Model\StoreManagerInterface $storeManager, \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig, \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder, \Magento\Framework\Translate\Inline\StateInterface $inlineTranslation
     )
     {
@@ -52,21 +29,16 @@ class Submit extends \Magento\Framework\App\Action\Action
         parent::__construct($context);
     }
 
-    /**
-     * The controller action
-     *
-     * @return \Magento\Framework\View\Result\Page
-     */
     public function execute()
-    {
+    {        
         $data = $this->getRequest()->getParams();
         $postObject = new \Magento\Framework\DataObject();
         $post = $this->getRequest()->getParams();
         $resultJson = $this->resultFactory->create(ResultFactory::TYPE_JSON);
         $resultarray = array();
-        if ($data) {
+        if ($data) {             
             $model = $this->_objectManager->create('Darsh\Callforprice\Model\Callforprice');
-            $model->setData($data);
+            $model->setData($data);             
             try {
                 $model->save();
                 /* email code for admin */
@@ -74,8 +46,7 @@ class Submit extends \Magento\Framework\App\Action\Action
                 $customerEmail = $post['customer_email'];
                 $customerTelephone = $post['customer_telephone'];
                 $requestDetail = $post['request_detail'];
-                $productName = $post['product_name'];
-
+                $productName = $post['product_name'];                
                 $admin = $this->scopeConfig->getValue(self::XML_PATH_EMAIL_SEND_TO, ScopeInterface::SCOPE_STORE);
                 $dataAdmin = [
                     'customer_name' => $customerName,
@@ -84,7 +55,7 @@ class Submit extends \Magento\Framework\App\Action\Action
                     'request_detail' => $requestDetail,
                     'product_name' => $productName
                 ];
-                $this->sendAdminEmail($postObject, $dataAdmin, $admin);
+                $this->sendAdminEmail($postObject, $dataAdmin, $admin);                
                 /* email code for admin end */
                 /* email code for customer */
                 $dataCustomer = [
@@ -94,7 +65,8 @@ class Submit extends \Magento\Framework\App\Action\Action
                 /* email code for customer */
                 $resultarray['status'] = "success";
                 $resultarray['message'] = "Your request has been received we will contact you.";
-            } catch (\Exception $e) {
+            } catch (\Exception $e) {                
+                echo $e->getMessage();
                 $resultarray['status'] = "error";
                 $resultarray['message'] = "Something went wrong while saving the community.";
             }
@@ -103,17 +75,12 @@ class Submit extends \Magento\Framework\App\Action\Action
         return $resultJson;
     }
 
-    /**
-     * @param $postObject
-     * @param $dataAdmin
-     * @param $admin
-     */
     protected function sendAdminEmail($postObject, $dataAdmin, $admin)
     {
         $postObject->setData($dataAdmin);
         $transportAdmin = $this->_transportBuilder
             ->setTemplateVars(['data' => $postObject])
-            ->setTemplateIdentifier('catalog_call_for_price_email_template_admin')
+            ->setTemplateIdentifier('callforprice_call_for_price_email_template_admin')
             ->setTemplateOptions(
                 [
                     'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
@@ -128,19 +95,14 @@ class Submit extends \Magento\Framework\App\Action\Action
         /* email code admin */
         $this->inlineTranslation->resume();
     }
-
-    /**
-     * @param $postObject
-     * @param $dataCustomer
-     * @param $email
-     */
+   
     protected function sendCustomerEmail($postObject, $dataCustomer, $email)
     {
 
         $postObject->setData($dataCustomer);
         $transport = $this->_transportBuilder
             ->setTemplateVars(['data' => $postObject])
-            ->setTemplateIdentifier('catalog_call_for_price_email_template_customer')
+            ->setTemplateIdentifier('callforprice_call_for_price_email_template_customer')
             ->setTemplateOptions(
                 [
                     'area' => \Magento\Framework\App\Area::AREA_FRONTEND,

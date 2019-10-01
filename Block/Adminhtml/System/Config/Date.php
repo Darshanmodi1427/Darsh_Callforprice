@@ -2,10 +2,6 @@
 
 namespace Darsh\Callforprice\Block\Adminhtml\System\Config;
 
-/**
- * Class Date
- * @package Darsh\Callforprice\Block\Adminhtml\System\Config
- */
 class Date extends \Magento\Config\Block\System\Config\Form\Field
 {
     /**

@@ -6,8 +6,10 @@ $buttonTitle = $callPriceHelper->getButtonTitle();
 <?php $_product = $block->getProduct(); ?>
 <?php $callForPrice = $callPriceHelper->showCallForPriceButton($_product); ?>
 <!--call for price condition-->
-<?php if ($callForPrice == 0) { ?>
-    <?php $buttonTitle = __('Add to Cart'); ?>
+<!-- <?php //echo $callForPrice; die(); ?> -->
+<?php if ($callForPrice == 0 || $callPriceHelper->isEnable() == 0) { ?>
+    <?php $buttonTitle = __('Add to Cart');
+     ?>
     <?php if ($_product->isSaleable()): ?>
         <div class="box-tocart">
             <div class="fieldset">

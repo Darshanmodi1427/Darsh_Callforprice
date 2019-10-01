@@ -1,38 +1,13 @@
 <?php
-
 namespace Darsh\Callforprice\Block\Adminhtml\Callforprice;
 
-/**
- * Class Grid
- * @package Darsh\Callforprice\Block\Adminhtml\Callforprice
- */
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
-    /**
-     * @var \Magento\Framework\Module\Manager
-     */
+   
     protected $moduleManager;
-
-    /**
-     * @var \Darsh\Callforprice\Model\callforpriceFactory
-     */
     protected $_callforpriceFactory;
-
-    /**
-     * @var \Darsh\Callforprice\Model\Status
-     */
     protected $_status;
 
-    /**
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data $backendHelper
-     * @param \Darsh\Callforprice\Model\callforpriceFactory $callforpriceFactory
-     * @param \Darsh\Callforprice\Model\Status $status
-     * @param \Magento\Framework\Module\Manager $moduleManager
-     * @param array $data
-     *
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
-     */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
@@ -48,18 +23,11 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         parent::__construct($context, $backendHelper, $data);
     }
 
-    /**
-     * @return string
-     */
     public function getGridUrl()
     {
         return $this->getUrl('callforprice/*/index', ['_current' => true]);
     }
 
-    /**
-     * @param \Darsh\Callforprice\Model\callforprice|\Magento\Framework\Object $row
-     * @return string
-     */
     public function getRowUrl($row)
     {
 
@@ -70,9 +38,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
     }
 
-    /**
-     * @return void
-     */
     protected function _construct()
     {
         parent::_construct();
@@ -84,9 +49,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->setVarNameFilter('post_filter');
     }
 
-    /**
-     * @return $this
-     */
     protected function _prepareCollection()
     {
         $collection = $this->_callforpriceFactory->create()->getCollection();
@@ -96,11 +58,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
         return $this;
     }
-
-    /**
-     * @return $this
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
-     */
+    
     protected function _prepareColumns()
     {
         $this->addColumn(
@@ -191,14 +149,10 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         return parent::_prepareColumns();
     }
 
-    /**
-     * @return $this
-     */
     protected function _prepareMassaction()
     {
 
         $this->setMassactionIdField('id');
-        //$this->getMassactionBlock()->setTemplate('Darsh_Callforprice::callforprice/grid/massaction_extended.phtml');
         $this->getMassactionBlock()->setFormFieldName('callforprice');
 
         $this->getMassactionBlock()->addItem(

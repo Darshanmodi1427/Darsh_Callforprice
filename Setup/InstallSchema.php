@@ -24,9 +24,9 @@ class InstallSchema implements InstallSchemaInterface
 
         $installer->startSetup();
 
-        if (!$installer->tableExists('darsh_callprice_request')) {
+        if (!$installer->tableExists('darsh_callprice')) {
             $table = $installer->getConnection()
-                ->newTable($installer->getTable('darsh_callprice_request'));
+                ->newTable($installer->getTable('darsh_callprice'));
             $table->addColumn(
                 'id', Table::TYPE_INTEGER, null, [
                 'auto_increment' => true,
@@ -57,7 +57,7 @@ class InstallSchema implements InstallSchemaInterface
                 ->addColumn(
                     'status', Table::TYPE_TEXT, 255, ['nullable' => false, 'default' => ''], 'Product Name'
                 )
-                ->setComment('Darsh Call Price Request');
+                ->setComment('Darsh Call Price');
             $installer->getConnection()->createTable($table);
         }
         $installer->endSetup();

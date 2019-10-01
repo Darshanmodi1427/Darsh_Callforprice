@@ -74,12 +74,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $submitformurl;
     }
 
+     public function isEnable()
+    {
+        return $this->scopeConfig->getValue('callforprice/call_for_price/enable', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+    }
+
     /**
      * @return mixed
      */
     public function getButtonTitle()
     {
-        $buttenTitle = $this->scopeConfig->getValue('catalog/call_for_price/call_for_price_button_text', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $buttenTitle = $this->scopeConfig->getValue('callforprice/call_for_price/call_for_price_button_text', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if($buttenTitle)
         {
             return $buttenTitle;
@@ -97,7 +102,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function allowedCustomerGroup()
     {
 
-        return $this->scopeConfig->getValue('catalog/call_for_price/customer_groups', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue('callforprice/call_for_price/customer_groups', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -128,7 +133,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getSpecificDateRange()
     {
-        return $this->scopeConfig->getValue('catalog/call_for_price/specific_date_range', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue('callforprice/call_for_price/specific_date_range', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -136,7 +141,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getFromDate()
     {
-        return $this->scopeConfig->getValue('catalog/call_for_price/from_date', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue('callforprice/call_for_price/from_date', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -144,7 +149,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getToDate()
     {
-        return $this->scopeConfig->getValue('catalog/call_for_price/to_date', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue('callforprice/call_for_price/to_date', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -168,7 +173,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @return int
      */
     public function getAllData($_product)
-    {
+    {        
         $callpriceflag = 0;
         $callpriceflagparent = 0;
         $callforprice = 0;
@@ -183,10 +188,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         $currentCategory = $this->registry->registry('current_category'); // check for current category
-        if ($currentCategory) {
+        if ($currentCategory) {            
             $cat = $this->catalogCategoryFactory->create()->load($currentCategory->getId());
             $callpriceflag = $cat->getCallForPrice();
-            if ($cat->getParentCategory()) {
+            if ($cat->getParentCategory()) {                
                 $callpriceflagparent = $cat->getParentCategory()->getCallForPrice();
             }
         }
@@ -198,6 +203,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             foreach($categories as $category){
                 $productcategory = $this->catalogCategoryFactory->create()->load($category);
                 if ($productcategory->getParentCategory()) {
+                    
                     $callforpriceParent[] = $productcategory->getParentCategory()->getCallForPrice();
                 }
                 $callforpriceCategory[] = $productcategory->getCallForPrice();
@@ -205,18 +211,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             
             }
             if(in_array('1',$callforpriceCategory))
-            {
+            {                
                 $callforprice = 1;
             }
             if(in_array('1',$callforpriceParent))
-            {
+            {             
                 $callforprice = 1;
             }
              
-        if ($callforprice == 1 || $callpriceflagparent == 1 || $callpriceflag == 1) {
+        if ($callforprice == 1 || $callpriceflagparent == 1 || $callpriceflag == 1) {            
            return $showCallForPriceButton = 1;
         }
-        else{
+        else{            
             return $showCallForPriceButton = 0;
         }
         
@@ -228,22 +234,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @return int
      */
     public function showCallForPriceButton($_product)
-    {
+    {        
         $showCallForPriceButton= 0;
 
         $allowed_customer_groups = array();
-        $customer_groups = $this->allowedCustomerGroup();  // Check customer Group
-        if ($customer_groups != "") {
+        $customer_groups = $this->allowedCustomerGroup();
+        if ($customer_groups != "") {     
             $allowed_customer_groups = explode(',', $customer_groups);
         }
 
-
-        $c_group = $this->getCurrentCustomerGroup(); // current customer group id
+        $c_group = $this->getCurrentCustomerGroup();        
         if($c_group!=0)
         {
             if (count($allowed_customer_groups) > 0) {
-                if (in_array($c_group, $allowed_customer_groups)) {
-                    /*code for category product and date*/
+                if (in_array($c_group, $allowed_customer_groups)) {                    
                     return $this->getAllData($_product);
                 }
                 else{
@@ -257,7 +261,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         else{
             return $this->getAllData($_product);
-
         }
     }
 }

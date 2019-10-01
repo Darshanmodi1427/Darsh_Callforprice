@@ -22,7 +22,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $setup->startSetup();
         if (version_compare($context->getVersion(), '1.0.2', '<')) {
 
-            $tableName = $setup->getTable('darsh_callprice_request');
+            $tableName = $setup->getTable('darsh_callprice');
             $connection = $setup->getConnection();
             $connection->addColumn(
                 $tableName,

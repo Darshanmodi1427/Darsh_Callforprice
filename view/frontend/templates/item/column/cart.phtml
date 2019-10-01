@@ -1,14 +1,4 @@
 <?php
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
-
-// @codingStandardsIgnoreFile
-
-/** @var \Magento\Wishlist\Block\Customer\Wishlist\Item\Column\Cart $block */
-
-/** @var \Magento\Wishlist\Model\Item $item */
 $item = $block->getItem();
 $product = $item->getProduct();
 $callPriceHelper = $this->helper('Darsh\Callforprice\Helper\Data');
@@ -32,7 +22,7 @@ $customerData = $callPriceHelper->getCurrentCustomerData();
         <?php if ($product->isSaleable()): ?>
             <div class="product-item-actions">
                 <div class="actions-primary">
-                    <?php if ($callforPrice == 0): ?>
+                    <?php if ($callforPrice == 0 || $callPriceHelper->isEnable() == 0): ?>
                         <button type="button" data-role="tocart" data-post='<?= /* @noEscape */ $block->getItemAddToCartParams($item) ?>' title="<?= $block->escapeHtmlAttr(__('Add to Cart')) ?>" data-item-id="<?= $block->escapeHtmlAttr($item->getId()) ?>" class="action tocart primary">
                             <span><?= $block->escapeHtml(__('Add to Cart')) ?></span>
                         </button>
